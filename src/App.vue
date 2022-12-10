@@ -1,47 +1,79 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import MyFiles from "./pages/MyFiles.vue";
+import Navbar from "./components/Navbar.vue";
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <Navbar />
+  <MyFiles />
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
+<style>
+@import url("https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400&display=swap");
+body {
+  padding-top: 50px;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+#app {
+  font-family: "PT Sans", Arial, sans-serif;
+  color: #333;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+.card-footer {
+  background-color: transparent;
+  border-top: none;
+}
+.selected-file .card-footer,
+.selected-folder {
+  background-color: #e8f0fe;
+  color: #387bd9;
+}
+.selected-folder {
+  border-radius: calc(0.25rem - 1px);
+}
+.active {
+  border: 1px solid #1967d2;
+}
+.selected-file svg,
+.selected-folder svg {
+  fill: #333;
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+.file-thumb {
+  border-top-left-radius: calc(0.25rem - 1px);
+  border-top-right-radius: calc(0.25rem - 1px);
+  height: 160px;
+}
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.file-name {
+  margin-left: 1rem;
+  font-size: 0.9em;
+  width: 250px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+}
+
+.rounded-button {
+  background: transparent;
+  width: 2em;
+  height: 2em;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  border-radius: 50%;
+  text-decoration: none;
+  font-weight: bold;
+  color: #333;
+  opacity: 0.8;
+  transition: all 0.3s ease-out;
+}
+.rounded-button:hover {
+  background: #ddd;
+  color: #333;
+  opacity: 1;
 }
 </style>
+

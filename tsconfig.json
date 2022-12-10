@@ -5,8 +5,10 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "lib": ["es2017"]
   },
+  "noImplicitAny": false,
 
   "references": [
     {
