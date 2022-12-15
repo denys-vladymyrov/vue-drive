@@ -1,3 +1,13 @@
+<script setup lang="ts">
+import SearchForm from "@/components/SearchForm.vue";
+import {ref, watch} from "vue";
+
+const q = ref("")
+
+watch(q, () => { console.log(q) })
+
+</script>
+
 <template>
   <nav
     class="
@@ -10,15 +20,7 @@
   >
     <div class="container">
       <a class="navbar-brand" href="/"><strong>Vue</strong>Drive</a>
-
-      <form class="form-inline mt-2 mt-md-0">
-        <input
-          class="form-control"
-          type="text"
-          placeholder="Search in Drive"
-          aria-label="Search"
-        />
-      </form>
+      <SearchForm v-model="q"/>
     </div>
   </nav>
 </template>
