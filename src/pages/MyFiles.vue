@@ -12,6 +12,11 @@ const query = reactive({
   _order: "asc",
   q: ""
 })
+const selectedItems = ref([])
+
+const handleSelectChange = (items: any) => {
+  selectedItems.value = Array.from(items)
+}
 
 const fetchFiles = async (query: any) => {
   try {
@@ -41,7 +46,7 @@ watchEffect(async () => (files.value = await fetchFiles(query)))
     <ActionBar />
 
     <div class="d-flex justify-content-between align-items-center py-2">
-      <h6 class="text-muted mb-0">Files</h6>
+      <h6 class="text-muted mb-0">Files {{ selectedItems }}</h6>
       <SortToggler @sort-change="handleSortChange($event)" />
     </div>
 
@@ -49,6 +54,6 @@ watchEffect(async () => (files.value = await fetchFiles(query)))
       <SearchForm v-model="query.q"/>
     </teleport>
 
-    <FilesList :files="files" />
+    <FilesList :files="files" @select-change="handleSelectChange($event)" />
   </div>
 </template>
