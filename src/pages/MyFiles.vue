@@ -2,13 +2,15 @@
 import ActionBar from "../components/ActionBar.vue"
 import FilesList from "@/components/files/FilesList.vue"
 import SortToggler from "@/components/SortToggler.vue"
+import SearchForm from "@/components/SearchForm.vue"
 import filesApi from "../api/files"
-import {reactive, ref, watch} from "vue"
+import {reactive, ref, watchEffect} from "vue"
 
 const files = ref([])
 const query = reactive({
   _sort: "name",
-  _order: "asc"
+  _order: "asc",
+  q: ""
 })
 
 const fetchFiles = async (query: any) => {
@@ -25,11 +27,13 @@ const handleSortChange = (payload: any) => {
   query._order = payload.order
 }
 
-watch(
-    () => query._order,
-    async () => {files.value = await fetchFiles(query)},
-    { immediate: true}
-)
+// watch(
+//     () => query._order,
+//     async () => {files.value = await fetchFiles(query)},
+//     { immediate: true}
+// )
+
+watchEffect(async () => (files.value = await fetchFiles(query)))
 </script>
 
 <template>
@@ -40,6 +44,10 @@ watch(
       <h6 class="text-muted mb-0">Files</h6>
       <SortToggler @sort-change="handleSortChange($event)" />
     </div>
+
+    <teleport to="#searchForm">
+      <SearchForm v-model="query.q"/>
+    </teleport>
 
     <FilesList :files="files" />
   </div>
