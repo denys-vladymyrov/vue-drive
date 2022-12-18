@@ -3,8 +3,10 @@ import ActionBar from "../components/ActionBar.vue"
 import FilesList from "@/components/files/FilesList.vue"
 import SortToggler from "@/components/SortToggler.vue"
 import SearchForm from "@/components/SearchForm.vue"
+import FileRenameForm from "@/components/files/FileRenameForm.vue"
 import filesApi from "../api/files"
 import {reactive, ref, watchEffect} from "vue"
+
 
 const files = ref([])
 const query = reactive({
@@ -17,6 +19,7 @@ const toast = reactive({
   show: false,
   message: ''
 })
+const showModal = ref(false)
 
 const handleSelectChange = (items: any) => {
   selectedItems.value = Array.from(items)
@@ -74,7 +77,7 @@ watchEffect(async () => (files.value = await fetchFiles(query)))
 
 <template>
   <div class="container py-3">
-    <ActionBar :selected-count="selectedItems.length" @remove="handleRemove" />
+    <ActionBar :selected-count="selectedItems.length" @remove="handleRemove" @rename="showModal = true" />
 
     <div class="d-flex justify-content-between align-items-center py-2">
       <h6 class="text-muted mb-0">Files {{ selectedItems }}</h6>
@@ -87,5 +90,8 @@ watchEffect(async () => (files.value = await fetchFiles(query)))
 
     <FilesList :files="files" @select-change="handleSelectChange($event)" />
     <app-toast :show="toast.show" :message="toast.message" type="success" position="bottom-left" @hide="toast.show = false" />
+    <app-modal title="Rename" :show="showModal && selectedItems.length === 1" @hide="showModal = false">
+      <FileRenameForm />
+    </app-modal>
   </div>
 </template>
