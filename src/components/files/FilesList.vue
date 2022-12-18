@@ -27,21 +27,27 @@ const selectMultiple = (item: any) => {
   emitSelectChange('select-change', selectedItems)
 }
 
+const clearSelected = () => {
+  selectedItems.clear()
+  emitSelectChange('select-change', selectedItems)
+}
+
 const isSelected = (item: any) => selectedItems.has(item)
 
 const emitSelectChange = defineEmits(['select-change'])
 
 
+
 </script>
 
 <template>
-  <div class="row">
+  <div class="row" @click="clearSelected">
     <FileItem
         v-for="file in files"
         :file="file"
         :key="+file.id"
-        @click.exact="selectOne(file)"
-        @click.ctrl="selectMultiple(file)"
+        @click.exact.stop="selectOne(file)"
+        @click.ctrl.stop="selectMultiple(file)"
         :class="{ 'selected-file': isSelected(file) }"
     />
   </div>
