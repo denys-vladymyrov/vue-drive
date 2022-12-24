@@ -91,7 +91,7 @@ watchEffect(async () => (files.value = await fetchFiles(query)))
     <FilesList :files="files" @select-change="handleSelectChange($event)" />
     <app-toast :show="toast.show" :message="toast.message" type="success" position="bottom-left" @hide="toast.show = false" />
     <app-modal title="Rename" :show="showModal && selectedItems.length === 1" @hide="showModal = false">
-      <FileRenameForm />
+      <FileRenameForm :file="selectedItems[0]" @close="showModal = false" />
     </app-modal>
   </div>
 </template>
