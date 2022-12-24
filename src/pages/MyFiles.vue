@@ -66,6 +66,15 @@ const handleRemove = () => {
   }
 }
 
+const handleFileUpdated = (file: any) => {
+  console.log("handleFileUpdated")
+  const oldFile: any = selectedItems.value[0]
+  const index = files.value.findIndex((item: any) => item.id === file.id )
+  files.value.splice(index, 1, file as never)
+  toast.show = true
+  toast.message = `File "${oldFile.name}" renamed to "${file.name}"`
+}
+
 // watch(
 //     () => query._order,
 //     async () => {files.value = await fetchFiles(query)},
@@ -91,7 +100,7 @@ watchEffect(async () => (files.value = await fetchFiles(query)))
     <FilesList :files="files" @select-change="handleSelectChange($event)" />
     <app-toast :show="toast.show" :message="toast.message" type="success" position="bottom-left" @hide="toast.show = false" />
     <app-modal title="Rename" :show="showModal && selectedItems.length === 1" @hide="showModal = false">
-      <FileRenameForm :file="selectedItems[0]" @close="showModal = false" />
+      <FileRenameForm :file="selectedItems[0]" @close="showModal = false" @file-updated="handleFileUpdated($event)" />
     </app-modal>
   </div>
 </template>

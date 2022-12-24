@@ -113,6 +113,7 @@ export default {
   padding: 1rem;
   box-shadow: 1px 5px 10px -5px rgba(0, 0, 0, 0.2);
   position: relative;
+  opacity: 1 !important;
 }
 
 .toast::before {
