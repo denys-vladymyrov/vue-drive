@@ -4,6 +4,7 @@ import FilesList from "@/components/files/FilesList.vue"
 import SortToggler from "@/components/SortToggler.vue"
 import SearchForm from "@/components/SearchForm.vue"
 import FileRenameForm from "@/components/files/FileRenameForm.vue"
+import DropZone from "@/components/uploader/file-chooser/DropZone.vue"
 import filesApi from "../api/files"
 import {reactive, ref, watchEffect} from "vue"
 
@@ -20,6 +21,7 @@ const toast = reactive({
   message: ''
 })
 const showModal = ref(false)
+const chosenFiles = ref([])
 
 const handleSelectChange = (items: any) => {
   selectedItems.value = Array.from(items)
@@ -86,7 +88,12 @@ watchEffect(async () => (files.value = await fetchFiles(query)))
 
 <template>
   <div class="container py-3">
-    <ActionBar :selected-count="selectedItems.length" @remove="handleRemove" @rename="showModal = true" />
+    <ActionBar
+        :selected-count="selectedItems.length"
+        @remove="handleRemove"
+        @rename="showModal = true"
+        @files-chosen="chosenFiles = $event"
+    />
 
     <div class="d-flex justify-content-between align-items-center py-2">
       <h6 class="text-muted mb-0">Files {{ selectedItems }}</h6>
@@ -97,10 +104,16 @@ watchEffect(async () => (files.value = await fetchFiles(query)))
       <SearchForm v-model="query.q"/>
     </teleport>
 
-    <FilesList :files="files" @select-change="handleSelectChange($event)" />
+    <DropZone @files-dropped="chosenFiles = $event" :show-message="!files.length">
+      <FilesList :files="files" @select-change="handleSelectChange($event)" />
+    </DropZone>
+
+
     <app-toast :show="toast.show" :message="toast.message" type="success" position="bottom-left" @hide="toast.show = false" />
     <app-modal title="Rename" :show="showModal && selectedItems.length === 1" @hide="showModal = false">
       <FileRenameForm :file="selectedItems[0]" @close="showModal = false" @file-updated="handleFileUpdated($event)" />
     </app-modal>
+
+    <div v-if="chosenFiles.length">Uploading...</div>
   </div>
 </template>

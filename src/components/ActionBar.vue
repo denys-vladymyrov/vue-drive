@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import FileChooser from "@/components/uploader/file-chooser/FileChooser.vue";
 
 const props = defineProps({
   selectedCount: {
@@ -7,7 +8,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['rename', 'remove'])
+const emit = defineEmits(['rename', 'remove', 'files-chosen'])
 
 
 </script>
@@ -15,7 +16,7 @@ const emit = defineEmits(['rename', 'remove'])
 
 <template>
   <div
-    class="
+      class="
       d-flex
       justify-content-between
       align-items-center
@@ -24,9 +25,8 @@ const emit = defineEmits(['rename', 'remove'])
       pb-3
     "
   >
-    <button class="btn btn-outline-primary">
-      <icon-upload /> Upload Files
-    </button>
+
+    <FileChooser @files-chosen="emit('files-chosen', $event)"/>
 
     <div class="action-buttons" v-show="selectedCount">
       <button
@@ -35,7 +35,7 @@ const emit = defineEmits(['rename', 'remove'])
           title="Rename" v-if="selectedCount === 1"
           @click="emit('rename')"
       >
-        <icon-pencil />
+        <icon-pencil/>
       </button>
       <button
           type="button"
@@ -43,7 +43,7 @@ const emit = defineEmits(['rename', 'remove'])
           title="Remove selected"
           @click="emit('remove')"
       >
-        <icon-trash />
+        <icon-trash/>
       </button>
     </div>
   </div>
