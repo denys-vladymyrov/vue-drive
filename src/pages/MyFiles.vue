@@ -5,6 +5,7 @@ import SortToggler from "@/components/SortToggler.vue"
 import SearchForm from "@/components/SearchForm.vue"
 import FileRenameForm from "@/components/files/FileRenameForm.vue"
 import DropZone from "@/components/uploader/file-chooser/DropZone.vue"
+import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
 import filesApi from "../api/files"
 import {reactive, ref, watchEffect} from "vue"
 
@@ -114,6 +115,8 @@ watchEffect(async () => (files.value = await fetchFiles(query)))
       <FileRenameForm :file="selectedItems[0]" @close="showModal = false" @file-updated="handleFileUpdated($event)" />
     </app-modal>
 
-    <div v-if="chosenFiles.length">Uploading...</div>
+    <div >
+      <UploaderPopup :files="chosenFiles" />
+    </div>
   </div>
 </template>
