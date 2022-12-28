@@ -70,7 +70,6 @@ const handleRemove = () => {
 }
 
 const handleFileUpdated = (file: any) => {
-  console.log("handleFileUpdated")
   const oldFile: any = selectedItems.value[0]
   const index = files.value.findIndex((item: any) => item.id === file.id )
   files.value.splice(index, 1, file as never)
