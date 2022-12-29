@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import states from "@/components/uploader/states"
 import PopupControls from "@/components/uploader/popup/PopupControls.vue"
+import UploadItem from "@/components/uploader/item/UploadItem.vue"
 import {computed, ref, watch} from "vue"
 
   const props = defineProps({
@@ -44,7 +45,6 @@ import {computed, ref, watch} from "vue"
 
   watch(() => props.files, (newFiles: any) => {
     items.value.unshift(...getUploadItems(newFiles) as [])
-    console.log("sdfsdf")
   } )
 
 
@@ -61,14 +61,12 @@ import {computed, ref, watch} from "vue"
     </div>
     <div class="upload-items" v-show="showPopupBody">
       <ul class="list-group list-group-flush" v-if="items.length">
-        <li
-            class="list-group-item d-flex justify-content-between align-items-center"
+        <UploadItem
             v-for="item in items"
             :key="`item-${item.id}`"
+            :item="item"
         >
-          <p class="upload-item">{{ item.file.name }}</p>
-          <div class="upload-controls">x</div>
-        </li>
+        </UploadItem>
       </ul>
     </div>
   </div>
