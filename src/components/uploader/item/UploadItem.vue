@@ -1,12 +1,45 @@
 <script setup lang="ts">
 import {useIconFileType} from "@/composable/icon-file-type"
-import IconTypeCommon from "@/components/icons/IconTypeCommon.vue"
+import {onMounted, reactive} from "vue";
+import filesApi from "../../../api/files"
+import states from "@/components/uploader/states";
 
 const props = defineProps({
   item: {
     type: Object,
     required: true
   }
+})
+
+const createFormData = (file: any) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return formData
+}
+const startUpload = async (upload: any) => {
+  try {
+    upload.state = states.UPLOADING
+    const { data } = await filesApi.create(createFormData(upload.file), {
+      onUploadProgress: (e: any) => {
+        if (e.event.lengthComputable) {
+          upload.progress = Math.round((e.loaded / e.total) * 100)
+        }
+      }
+    })
+    upload.state = states.COMPLETE
+    upload.response = data
+  }
+  catch (error) {
+    console.log(error)
+    upload.state = states.FAILED
+    upload.progress = 0
+  }
+}
+
+const uploadItem = reactive(props.item)
+
+onMounted(() => {
+  startUpload(uploadItem)
 })
 
 </script>
@@ -18,7 +51,7 @@ const props = defineProps({
       <component :is="useIconFileType(item.file.type)" />
       <span>{{ item.file.name }}</span>
     </p>
-    <div class="upload-controls">x</div>
+    <div class="upload-controls">{{  uploadItem.state }} - {{ uploadItem.progress }}</div>
   </li>
 </template>
 
