@@ -61,7 +61,7 @@ server.listen(port, () => {
 });
 
 function validateFileType(req, file, cb) {
-  if (!file.originalname.match(/\.(jpg|jpeg|png|gif|doc|docx|pdf|xls|xlsx)$/)) {
+  if (!file.originalname.match(/\.(jpg|jpeg|png|gif|doc|docx|pdf|xls|xlsx|mp4)$/)) {
     return cb(new Error("File you're trying to upload was not allowed"));
   }
   cb(null, true);
