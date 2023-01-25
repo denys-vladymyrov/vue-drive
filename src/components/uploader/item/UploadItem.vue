@@ -1,17 +1,18 @@
 <template>
   <li class="list-group-item d-flex justify-content-between align-items-center">
-    <p class="upload-item">
+    <p :class="uploadItemClasses">
       <component :is="useIconFileType(item.file.type)" />
       <span>{{ item.file.name }}</span>
     </p>
-    <UploadControls :item="item" @cancel="handleCancel" />
+    <span class="failed-text" v-show="isCanceled">Upload canceled</span>
+    <UploadControls :item="item" @cancel="handleCancel" @retry="handleRetry" />
   </li>
 </template>
 
 
 <script setup lang="ts">
 import {useIconFileType} from "@/composable/icon-file-type"
-import {onMounted, reactive} from "vue"
+import {computed, onMounted, reactive} from "vue"
 import filesApi from "../../../api/files"
 import states from "@/components/uploader/states"
 import UploadControls from "@/components/uploader/item/UploadControls.vue"
@@ -25,6 +26,18 @@ const props = defineProps({
 })
 
 const uploadItem = reactive(props.item)
+let source = axios.CancelToken.source()
+
+const isCanceled = computed(() => uploadItem.state === states.CANCELED)
+const uploadItemClasses = computed(() => {
+  return {
+    "upload-item": true,
+    "failed": isCanceled.value
+  }
+})
+
+
+
 const createFormData = (file: any) => {
   const formData = new FormData()
   formData.append('file', file)
@@ -50,9 +63,13 @@ const startUpload = async (upload: any, source:  any ) => {
   }
 }
 
-const source = axios.CancelToken.source()
+
 const handleCancel = () => {
   source.cancel()
+}
+const handleRetry = () => {
+  source = axios.CancelToken.source()
+  startUpload(uploadItem, source)
 }
 
 onMounted(() => {

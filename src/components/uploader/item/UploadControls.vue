@@ -1,6 +1,6 @@
 <template>
   <div class="upload-controls">
-    {{ item.state }} - {{ item.progress }}
+    {{ item.progress }}
     <button @click="emit('cancel')">c</button>
     <button @click="emit('retry')">r</button>
     <button @click="emit('locate')">l</button>
