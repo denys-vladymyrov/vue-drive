@@ -5,14 +5,14 @@
       <span>{{ item.file.name }}</span>
     </p>
     <span class="failed-text" v-show="isCanceled">Upload canceled</span>
-    <UploadControls :item="item" @cancel="handleCancel" @retry="handleRetry" />
+    <UploadControls :item="item" @cancel="handleCancel" @retry="handleRetry" @locate="handleLocate" />
   </li>
 </template>
 
 
 <script setup lang="ts">
 import {useIconFileType} from "@/composable/icon-file-type"
-import {computed, onMounted, reactive} from "vue"
+import {computed, inject, onMounted, reactive, watch} from "vue"
 import filesApi from "../../../api/files"
 import states from "@/components/uploader/states"
 import UploadControls from "@/components/uploader/item/UploadControls.vue"
@@ -35,8 +35,6 @@ const uploadItemClasses = computed(() => {
     "failed": isCanceled.value
   }
 })
-
-
 
 const createFormData = (file: any) => {
   const formData = new FormData()
@@ -63,13 +61,26 @@ const startUpload = async (upload: any, source:  any ) => {
   }
 }
 
+watch(() => [uploadItem.progress, uploadItem.state], () => {
+  emit('change', uploadItem)
+} )
+
+const emit = defineEmits(['change'])
+
 
 const handleCancel = () => {
   source.cancel()
 }
+
 const handleRetry = () => {
   source = axios.CancelToken.source()
   startUpload(uploadItem, source)
+}
+
+const setSelectedItem = inject('setSelectedItem')
+
+const handleLocate = () => {
+  setSelectedItem([uploadItem.response])
 }
 
 onMounted(() => {

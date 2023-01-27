@@ -6,6 +6,10 @@ const props = defineProps({
   files: {
     type: Array,
     required: true
+  },
+  selected: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -32,7 +36,7 @@ const clearSelected = () => {
   emitSelectChange('select-change', selectedItems)
 }
 
-const isSelected = (item: any) => selectedItems.has(item)
+const isSelected = (item: any) => selectedItems.has(item) || props.selected?.length && props.selected[0].id === item.id
 
 const emitSelectChange = defineEmits(['select-change'])
 

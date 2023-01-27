@@ -1,3 +1,25 @@
+<template>
+  <div class="card shadow uploader-popup" v-if="items.length">
+    <div class="card-header bg-dark py-3">
+      <div class="d-flex justify-content-between align-items-center">
+        <span class="text-center text-white">{{ uploadingStatus }}</span>
+        <PopupControls @toggle="showPopupBody = !showPopupBody" @close="handleClose" />
+      </div>
+    </div>
+    <div class="upload-items" v-show="showPopupBody">
+      <ul class="list-group list-group-flush" v-if="items.length">
+        <UploadItem
+            v-for="item in items"
+            :key="`item-${item.id}`"
+            :item="item"
+            @change="handleItemChange"
+        >
+        </UploadItem>
+      </ul>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
 import states from "@/components/uploader/states"
 import PopupControls from "@/components/uploader/popup/PopupControls.vue"
@@ -43,35 +65,22 @@ import {computed, ref, watch} from "vue"
     return `Uploading ${uploadingItemsCount.value} items`
   })
 
+  const handleItemChange = (item: any) => {
+    if (item.state === states.COMPLETE) {
+      emit('upload-complete', item.response)
+      const index = items.value.findIndex((i: any) => i.id === item.id)
+      items.value.splice(index, 1, (item as never))
+    }
+  }
+
+const emit = defineEmits(['upload-complete'])
+
   watch(() => props.files, (newFiles: any) => {
     items.value.unshift(...getUploadItems(newFiles) as [])
   } )
 
 
 </script>
-
-
-<template>
-  <div class="card shadow uploader-popup" v-if="items.length">
-    <div class="card-header bg-dark py-3">
-      <div class="d-flex justify-content-between align-items-center">
-        <span class="text-center text-white">{{ uploadingStatus }}</span>
-        <PopupControls @toggle="showPopupBody = !showPopupBody" @close="handleClose" />
-      </div>
-    </div>
-    <div class="upload-items" v-show="showPopupBody">
-      <ul class="list-group list-group-flush" v-if="items.length">
-        <UploadItem
-            v-for="item in items"
-            :key="`item-${item.id}`"
-            :item="item"
-        >
-        </UploadItem>
-      </ul>
-    </div>
-  </div>
-</template>
-
 <style scoped>
   .uploader-popup {
     width: 400px;
