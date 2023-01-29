@@ -12,8 +12,11 @@
     "start": "concurrently \"npm run api\" \"npm run dev\""
   },
   "dependencies": {
+    "-": "^0.0.1",
     "axios": "^1.2.1",
     "bootstrap": "^5.0.1",
+    "sass": "^1.57.1",
+    "sass-loader": "^13.2.0",
     "vue": "^3.2.45"
   },
   "devDependencies": {

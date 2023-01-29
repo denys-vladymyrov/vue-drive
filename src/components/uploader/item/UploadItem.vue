@@ -17,6 +17,7 @@ import filesApi from "../../../api/files"
 import states from "@/components/uploader/states"
 import UploadControls from "@/components/uploader/item/UploadControls.vue"
 import axios from "axios"
+import useUploadStates from "@/composable/upload-states"
 
 const props = defineProps({
   item: {
@@ -28,7 +29,9 @@ const props = defineProps({
 const uploadItem = reactive(props.item)
 let source = axios.CancelToken.source()
 
-const isCanceled = computed(() => uploadItem.state === states.CANCELED)
+const { isCanceled } = useUploadStates(uploadItem)
+
+
 const uploadItemClasses = computed(() => {
   return {
     "upload-item": true,
