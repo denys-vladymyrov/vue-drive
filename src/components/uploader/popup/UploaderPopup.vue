@@ -7,6 +7,7 @@
       </div>
     </div>
     <div class="upload-items" v-show="showPopupBody">
+      <UploaderControls :items="items" @cancel="cancelUploadingItems" @retry="reuploadCanceledItems" />
       <ul class="list-group list-group-flush" v-if="items.length">
         <UploadItem
             v-for="item in items"
@@ -25,6 +26,9 @@ import states from "@/components/uploader/states"
 import PopupControls from "@/components/uploader/popup/PopupControls.vue"
 import UploadItem from "@/components/uploader/item/UploadItem.vue"
 import {computed, ref, watch} from "vue"
+import useUploadStatistics from "@/composable/upload-statistics";
+import UploaderControls from "@/components/uploader/popup/UploaderControls.vue";
+
 
   const props = defineProps({
     files: {
@@ -37,9 +41,17 @@ import {computed, ref, watch} from "vue"
   const showPopupBody = ref(true)
 
   const handleClose = () => {
-    if (confirm("Cancel all uploads?")) {
+    const {uploadingItemsCount} = useUploadStatistics(items)
+    if (uploadingItemsCount) {
+      if (confirm("Cancel all uploads?")) {
+        cancelUploadingItems()
+        items.value.splice(0)
+      }
+    }
+    else {
       items.value.splice(0)
     }
+
   }
 
   const randomId = () => {
@@ -57,13 +69,22 @@ import {computed, ref, watch} from "vue"
     return res
   }
 
-  const uploadingItemsCount = computed(() => {
-    return items.value.filter((item: any) => item.state === states.WAITING || states.UPLOADING).length
-  })
+
 
   const uploadingStatus = computed(() => {
-    return `Uploading ${uploadingItemsCount.value} items`
+    const {uploadingItemsCount, failedItemsCount, completeItemsCount} = useUploadStatistics(items)
+
+    if (uploadingItemsCount > 0) {
+      return `Uploading ${uploadingItemsCount} items`
+    }
+    else if (completeItemsCount > 0) {
+      return `${completeItemsCount} uploads complete`
+    }
+    else if (failedItemsCount > 0) {
+      return `${failedItemsCount} uploads failed`
+    }
   })
+
 
   const handleItemChange = (item: any) => {
     if (item.state === states.COMPLETE) {
@@ -73,7 +94,27 @@ import {computed, ref, watch} from "vue"
     }
   }
 
-const emit = defineEmits(['upload-complete'])
+  const cancelUploadingItems = () => {
+    items.value.map((item: any) => {
+      if (item.state === states.WAITING || item.state === states.UPLOADING) {
+        item.state = states.CANCELED
+        item.progress = 0
+      }
+      return item
+    })
+  }
+  const reuploadCanceledItems = () => {
+    items.value.map((item: any) => {
+      if (item.state === states.CANCELED) {
+        item.state = states.WAITING
+        item.progress = 0
+      }
+      return item
+    })
+  }
+
+
+  const emit = defineEmits(['upload-complete'])
 
   watch(() => props.files, (newFiles: any) => {
     items.value.unshift(...getUploadItems(newFiles) as [])

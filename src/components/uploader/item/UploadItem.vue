@@ -59,20 +59,28 @@ const startUpload = async (upload: any, source:  any ) => {
     upload.response = data
   }
   catch (error) {
-    upload.state = axios.isCancel(error) ? states.CANCELED : states.FAILED;
+    if (!axios.isCancel(error)) {
+      upload.state = states.FAILED
+    }
     upload.progress = 0
   }
 }
 
 watch(() => [uploadItem.progress, uploadItem.state], () => {
+  if (uploadItem.state === states.CANCELED) {
+    source.cancel()
+  }
+  else if (uploadItem.state === states.WAITING) {
+    handleRetry()
+  }
   emit('change', uploadItem)
-} )
+})
 
 const emit = defineEmits(['change'])
 
 
 const handleCancel = () => {
-  source.cancel()
+  uploadItem.state = states.CANCELED
 }
 
 const handleRetry = () => {
