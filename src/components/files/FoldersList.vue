@@ -6,6 +6,7 @@
         :key="`folder-${folder.id}`"
         @click.exact.stop="selectOne(folder)"
         @click.ctrl.stop="selectMultiple(folder)"
+        @dblclick.stop="emits('double-click', folder)"
         :class="{ 'selected-folder': isSelected(folder) }"
     />
   </div>
@@ -13,7 +14,7 @@
 
 
 <script setup lang="ts">
-import {reactive} from "vue";
+import useItemsSelection from "@/composable/items-selection";
 import FolderItem from "@/components/files/FolderItem.vue";
 
 const props = defineProps({
@@ -27,34 +28,6 @@ const props = defineProps({
   }
 })
 
-const selectedItems = reactive(new Set())
-
-const selectOne = (item: any) => {
-  selectedItems.clear()
-  selectedItems.add(item)
-  emitSelectChange('select-change', selectedItems)
-}
-
-const selectMultiple = (item: any) => {
-  if (selectedItems.has(item)) {
-    selectedItems.delete(item)
-  }
-  else {
-    selectedItems.add(item)
-  }
-  emitSelectChange('select-change', selectedItems)
-}
-
-const clearSelected = () => {
-  selectedItems.clear()
-  emitSelectChange('select-change', selectedItems)
-}
-
-const isSelected = (item: any) => selectedItems.has(item) || props.selected?.length && props.selected[0].id === item.id
-
-const emitSelectChange = defineEmits(['select-change'])
-
-
-
+const emits = defineEmits(['select-change', 'double-click'])
+const {selectOne, selectMultiple, isSelected, clearSelected} = useItemsSelection(props, emits)
 </script>
-

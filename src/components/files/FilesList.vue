@@ -1,49 +1,3 @@
-<script setup lang="ts">
-import FileItem from "@/components/files/FileItem.vue";
-import {reactive} from "vue";
-
-const props = defineProps({
-  files: {
-    type: Array,
-    required: true
-  },
-  selected: {
-    type: Array,
-    default: () => []
-  }
-})
-
-const selectedItems = reactive(new Set())
-
-const selectOne = (item: any) => {
-  selectedItems.clear()
-  selectedItems.add(item)
-  emitSelectChange('select-change', selectedItems)
-}
-
-const selectMultiple = (item: any) => {
-  if (selectedItems.has(item)) {
-    selectedItems.delete(item)
-  }
-  else {
-    selectedItems.add(item)
-  }
-  emitSelectChange('select-change', selectedItems)
-}
-
-const clearSelected = () => {
-  selectedItems.clear()
-  emitSelectChange('select-change', selectedItems)
-}
-
-const isSelected = (item: any) => selectedItems.has(item) || props.selected?.length && props.selected[0].id === item.id
-
-const emitSelectChange = defineEmits(['select-change'])
-
-
-
-</script>
-
 <template>
   <div class="row" @click="clearSelected">
     <FileItem
@@ -56,3 +10,23 @@ const emitSelectChange = defineEmits(['select-change'])
     />
   </div>
 </template>
+
+
+<script setup lang="ts">
+import FileItem from "@/components/files/FileItem.vue";
+import useItemsSelection from "@/composable/items-selection";
+
+const props = defineProps({
+  files: {
+    type: Array,
+    required: true
+  },
+  selected: {
+    type: Array,
+    default: () => []
+  }
+})
+
+const emitSelectChange = defineEmits(['select-change'])
+const {selectOne, selectMultiple, isSelected, clearSelected} = useItemsSelection(props, emitSelectChange)
+</script>

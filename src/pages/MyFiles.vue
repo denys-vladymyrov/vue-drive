@@ -16,8 +16,13 @@
       <SearchForm v-model="query.q"/>
     </teleport>
 
-    <DropZone @files-dropped="chosenFiles = $event" :show-message="!files.length">
-      <FoldersList :folders="folders" @select-change="handleSelectChange($event)" :selected="selectedItems" />
+    <DropZone @files-dropped="chosenFiles = $event" :show-message="!files.length && !folders.length">
+      <FoldersList
+          :folders="folders"
+          @select-change="handleSelectChange($event)"
+          :selected="selectedItems"
+          @double-click="handleDoubleClickFolder"
+      />
       <FilesList :files="files" @select-change="handleSelectChange($event)" :selected="selectedItems" />
     </DropZone>
 
@@ -142,6 +147,10 @@ const handleFileUpdated = (file: any) => {
 
 const handleUploadComplete = (item: never) => {
   files.value.push(item)
+}
+
+const handleDoubleClickFolder = (folder: any) => {
+  query.folderId = folder.id
 }
 
 watchEffect(async () => {
