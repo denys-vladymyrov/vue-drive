@@ -17,6 +17,7 @@
     </teleport>
 
     <DropZone @files-dropped="chosenFiles = $event" :show-message="!files.length">
+      <FoldersList :folders="folders" @select-change="handleSelectChange($event)" :selected="selectedItems" />
       <FilesList :files="files" @select-change="handleSelectChange($event)" :selected="selectedItems" />
     </DropZone>
 
@@ -36,21 +37,28 @@
 <script setup lang="ts">
 import ActionBar from "../components/ActionBar.vue"
 import FilesList from "@/components/files/FilesList.vue"
+import FoldersList from "@/components/files/FoldersList.vue"
 import SortToggler from "@/components/SortToggler.vue"
 import SearchForm from "@/components/SearchForm.vue"
 import FileRenameForm from "@/components/files/FileRenameForm.vue"
 import DropZone from "@/components/uploader/file-chooser/DropZone.vue"
 import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
 import filesApi from "../api/files"
+import foldersApi from "../api/folders"
 import {reactive, ref, watchEffect, provide} from "vue"
 
+// variables
 
 const files = ref([])
+const folders = ref([])
+
 const query = reactive({
   _sort: "name",
   _order: "asc",
-  q: ""
+  q: "",
+  folderId: 0
 })
+
 const selectedItems = ref([])
 const toast = reactive({
   show: false,
@@ -59,16 +67,36 @@ const toast = reactive({
 const showModal = ref(false)
 const chosenFiles = ref([])
 
+// methods
+
 const handleSelectChange = (items: any) => {
   selectedItems.value = Array.from(items)
 }
 
 provide('setSelectedItem', handleSelectChange)
 
-const fetchFiles = async (query: any) => {
+const getPath = (query: any) => {
+  let folderPath = "folders"
+  let filePath = "files"
+
+  if (query.folderId > 0) {
+    const basePath = `folders/${query.folderId}`
+    folderPath = `${basePath}/${folderPath}`
+    filePath = `${basePath}/${filePath}`
+  }
+
+  return { folderPath, filePath }
+}
+
+const fetchFoldersAndFiles = async (query: any) => {
   try {
-    const { data } = await filesApi.index(query)
-    return data
+    const { folderPath, filePath } = getPath(query)
+    console.log("folderPath: " + folderPath)
+    console.log("filePath: " + filePath)
+
+    const { data: folders } = await foldersApi.index(query, folderPath)
+    const { data: files } = await filesApi.index(query, filePath)
+    return { folders, files }
   }
   catch (error) {
     console.error(error)
@@ -116,6 +144,10 @@ const handleUploadComplete = (item: never) => {
   files.value.push(item)
 }
 
-watchEffect(async () => (files.value = await fetchFiles(query)))
+watchEffect(async () => {
+  const response = await fetchFoldersAndFiles(query)
+  files.value = response?.files
+  folders.value = response?.folders
+})
 </script>
 

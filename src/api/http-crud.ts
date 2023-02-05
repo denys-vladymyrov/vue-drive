@@ -1,8 +1,12 @@
 import http from "./http";
 
 export default (resource: any) => ({
-    index(query = {}) {
-        return http.get(`/${resource}?${new URLSearchParams(query)}`);
+    index(query = {}, path = '') {
+        console.log("query: ")
+        console.dir(query)
+        console.log("path: ")
+        console.dir(path)
+        return http.get(`/${path || resource}?${new URLSearchParams(query)}`);
     },
 
     show(id: string) {
