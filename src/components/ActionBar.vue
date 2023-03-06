@@ -1,19 +1,3 @@
-<script setup lang="ts">
-import FileChooser from "@/components/uploader/file-chooser/FileChooser.vue";
-
-const props = defineProps({
-  selectedCount: {
-    type: Number,
-    default: 0
-  }
-})
-
-const emit = defineEmits(['rename', 'remove', 'files-chosen'])
-
-
-</script>
-
-
 <template>
   <div
       class="
@@ -25,8 +9,12 @@ const emit = defineEmits(['rename', 'remove', 'files-chosen'])
       pb-3
     "
   >
-
-    <FileChooser @files-chosen="emit('files-chosen', $event)"/>
+    <div>
+      <button @click="emit('create-folder')" class="me-2 btn btn-outline-success">
+        <icon-folder-plus /> New Folder
+      </button>
+      <FileChooser @files-chosen="emit('files-chosen', $event)"/>
+    </div>
 
     <div class="action-buttons" v-show="selectedCount">
       <button
@@ -48,3 +36,22 @@ const emit = defineEmits(['rename', 'remove', 'files-chosen'])
     </div>
   </div>
 </template>
+
+
+
+<script setup lang="ts">
+import FileChooser from "@/components/uploader/file-chooser/FileChooser.vue";
+
+const props = defineProps({
+  selectedCount: {
+    type: Number,
+    default: 0
+  }
+})
+
+const emit = defineEmits(['rename', 'remove', 'files-chosen', 'create-folder'])
+
+
+</script>
+
+

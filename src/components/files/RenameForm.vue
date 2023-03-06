@@ -10,19 +10,8 @@
 
 
 <script setup lang="ts">
-import {ref, nextTick} from "vue";
+import {ref} from "vue";
 
-const vHighlight = {
-  mounted: async (el: any) => {
-    await nextTick(() => {
-      const selectionEnd = el.value.split(".").slice(0, -1).join(".").length
-      el.setSelectionRange(0, selectionEnd)
-      el.focus()
-    })
-
-
-  }
-}
 
 const props = defineProps({
   data: {

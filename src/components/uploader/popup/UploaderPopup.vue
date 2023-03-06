@@ -34,6 +34,10 @@ import UploaderControls from "@/components/uploader/popup/UploaderControls.vue";
     files: {
       type: Object,
       required: true
+    },
+    folderId: {
+      type: [Number, String],
+      default: 0
     }
   })
 
@@ -58,18 +62,16 @@ import UploaderControls from "@/components/uploader/popup/UploaderControls.vue";
     return Math.random().toString(36).substring(2, 9)
   }
 
-  const getUploadItems = (files: any) => {
-    const res = Array.from(files).map(file => ({
+  const getUploadItems = (files: any, folderId: number | string) => {
+    return Array.from(files).map(file => ({
       id: randomId(),
       file,
       progress: 0,
       state: states.WAITING,
-      response: null
+      response: null,
+      folderId
     }))
-    return res
   }
-
-
 
   const uploadingStatus = computed(() => {
     const {uploadingItemsCount, failedItemsCount, completeItemsCount} = useUploadStatistics(items)
@@ -84,7 +86,6 @@ import UploaderControls from "@/components/uploader/popup/UploaderControls.vue";
       return `${failedItemsCount} uploads failed`
     }
   })
-
 
   const handleItemChange = (item: any) => {
     if (item.state === states.COMPLETE) {
@@ -103,6 +104,7 @@ import UploaderControls from "@/components/uploader/popup/UploaderControls.vue";
       return item
     })
   }
+
   const reuploadCanceledItems = () => {
     items.value.map((item: any) => {
       if (item.state === states.CANCELED) {
@@ -113,11 +115,10 @@ import UploaderControls from "@/components/uploader/popup/UploaderControls.vue";
     })
   }
 
-
   const emit = defineEmits(['upload-complete'])
 
   watch(() => props.files, (newFiles: any) => {
-    items.value.unshift(...getUploadItems(newFiles) as [])
+    items.value.unshift(...getUploadItems(newFiles, props.folderId) as [])
   } )
 
 

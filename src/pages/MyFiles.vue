@@ -3,8 +3,9 @@
     <ActionBar
         :selected-count="selectedItems.length"
         @remove="handleRemove"
-        @rename="showModal = true"
+        @rename="modal.rename = true"
         @files-chosen="chosenFiles = $event"
+        @create-folder="modal.newFolder = true"
     />
 
     <teleport to="#searchForm">
@@ -25,17 +26,26 @@
 
 
     <app-toast :show="toast.show" :message="toast.message" type="success" position="bottom-left" @hide="toast.show = false" />
-    <app-modal title="Rename" :show="showModal && selectedItems.length === 1" @hide="showModal = false">
-      <RenameForm
-          :data="selectedItems[0]"
-          @close="showModal = false"
-          @updated="handleFileUpdated"
-          :submit="renameFile"
-          v-if="isFile"
+    <app-modal
+        :title="modal.rename ? 'Rename' : 'New Folder'"
+        :show="(modal.rename && selectedItems.length === 1) || modal.newFolder"
+        @hide="modal.rename = false, modal.newFolder = false">
+      <FolderNewForm
+          v-if="modal.newFolder"
+          @folder-created="handleFolderCreated"
+          @close="modal.newFolder = false"
+          :folder-id="query.folderId"
       />
       <RenameForm
           :data="selectedItems[0]"
-          @close="showModal = false"
+          @close="modal.rename = false"
+          @updated="handleFileUpdated"
+          :submit="renameFile"
+          v-else-if="modal.rename && isFile"
+      />
+      <RenameForm
+          :data="selectedItems[0]"
+          @close="modal.rename = false"
           @updated="handleFolderUpdated"
           :submit="renameFolder"
           v-else
@@ -43,7 +53,11 @@
     </app-modal>
 
     <div >
-      <UploaderPopup :files="chosenFiles" @upload-complete="handleUploadComplete" />
+      <UploaderPopup
+          :files="chosenFiles"
+          @upload-complete="handleUploadComplete"
+          :folder-id="query.folderId"
+      />
     </div>
   </div>
 </template>
@@ -60,6 +74,7 @@ import FoldersList from "@/components/files/FoldersList.vue"
 import SectionHeader from "@/components/files/SectionHeader.vue"
 import SearchForm from "@/components/SearchForm.vue"
 import RenameForm from "@/components/files/RenameForm.vue"
+import FolderNewForm from "@/components/files/FolderNewForm.vue"
 import DropZone from "@/components/uploader/file-chooser/DropZone.vue"
 import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
 
@@ -80,7 +95,10 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
     show: false,
     message: ''
   })
-  const showModal = ref(false)
+  const modal = reactive({
+    rename: false,
+    newFolder: false
+  })
   const chosenFiles = ref([])
 
   const renameFile = filesApi.update
@@ -90,6 +108,12 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
 
   const handleSelectChange = (items: any) => {
     selectedItems.value = Array.from(items)
+  }
+
+  const handleFolderCreated = (folder: any) => {
+    folders.value.push(folder as never)
+    toast.message = `Folder ${folder.name} created`
+    toast.show = true
   }
 
   provide('setSelectedItem', handleSelectChange)
@@ -122,18 +146,17 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
     }
   }
 
-  const removeItem = async (item: any) => {
+  const removeItem = async (item: any, items: any, fn: Function) => {
     try {
-      const response = await filesApi.delete(item.id)
+      const response = await fn(item.id);
       if (response.status === 200 || response.status === 204) {
-        const index = files.value.findIndex((file: any) => file.id === item.id)
-        files.value.splice(index, 1)
+        const index = items.value.findIndex((i: any) => i.id === item.id);
+        items.value.splice(index, 1);
       }
+    } catch (error) {
+      console.error(error);
     }
-    catch (error) {
-      console.error(error)
-    }
-  }
+  };
 
   const handleSortChange = (payload: any) => {
     query._sort = payload.column
@@ -141,15 +164,19 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
   }
 
   const handleRemove = () => {
-    if (confirm('Are you sure?')) {
-      selectedItems.value.forEach(item => {
-        removeItem(item)
-      })
-      selectedItems.value.splice(0)
-      toast.show = true
-      toast.message = 'selected item(s) successfully removed'
+    if (confirm("Are you sure?")) {
+      selectedItems.value.forEach((item: any) => {
+        if (item.mimeType) {
+          removeItem(item, files, filesApi.delete);
+        } else {
+          removeItem(item, folders, foldersApi.delete);
+        }
+      });
+      selectedItems.value.splice(0);
+      toast.show = true;
+      toast.message = "Selected item(s) successfully removed";
     }
-  }
+  };
 
   const handleRename = (items: any, newItem: any, entity: any) => {
     const oldItem: any = selectedItems.value[0]

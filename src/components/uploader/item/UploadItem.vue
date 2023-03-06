@@ -31,7 +31,6 @@ let source = axios.CancelToken.source()
 
 const { isCanceled } = useUploadStates(uploadItem)
 
-
 const uploadItemClasses = computed(() => {
   return {
     "upload-item": true,
@@ -39,15 +38,16 @@ const uploadItemClasses = computed(() => {
   }
 })
 
-const createFormData = (file: any) => {
+const createFormData = (upload: any) => {
   const formData = new FormData()
-  formData.append('file', file)
+  formData.append('file', upload.file)
+  formData.append('folderId', upload.folderId)
   return formData
 }
 const startUpload = async (upload: any, source:  any ) => {
   try {
     upload.state = states.UPLOADING
-    const { data } = await filesApi.create(createFormData(upload.file), {
+    const { data } = await filesApi.create(createFormData(upload), {
       onUploadProgress: (e: any) => {
         if (e.event.lengthComputable) {
           upload.progress = Math.round((e.loaded / e.total) * 100)
