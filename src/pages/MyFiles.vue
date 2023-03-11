@@ -1,5 +1,5 @@
 <template>
-  <div class="container py-3">
+  <div class="container">
     <ActionBar
         :selected-count="selectedItems.length"
         @remove="handleRemove"
@@ -8,9 +8,9 @@
         @create-folder="modal.newFolder = true"
     />
 
-    <teleport to="#searchForm">
-      <SearchForm v-model="query.q"/>
-    </teleport>
+<!--    <teleport to="#searchForm">-->
+<!--      <SearchForm v-model="query.q"/>-->
+<!--    </teleport>-->
 
     <DropZone @files-dropped="chosenFiles = $event" :show-message="!files.length && !folders.length">
       <SectionHeader title="Folders" @sort-change="handleSortChange" v-if="folders.length" sort-toggler />

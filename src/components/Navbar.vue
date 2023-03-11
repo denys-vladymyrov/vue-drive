@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="
+      class="
       navbar navbar-light
       bg-white
       navbar-expand-lg
@@ -8,9 +8,9 @@
       fixed-top
     "
   >
-    <div class="container">
+    <div class="container-fluid">
       <a class="navbar-brand" href="/"><strong>Vue</strong>Drive</a>
-      <div id="searchForm"></div>
+      <div id="search-form"></div>
     </div>
   </nav>
 </template>

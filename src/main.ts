@@ -2,9 +2,12 @@ import {createApp, nextTick} from 'vue'
 import App from './App.vue'
 import icons from './components/icons/all'
 import Toast from "@/components/toast/Toast.vue"
-import Modal from "@/components/Modal.vue";
+import Modal from "@/components/Modal.vue"
+import router from "@/router"
 
 const app = createApp(App)
+
+app.use(router)
 
 for (const [key, value] of Object.entries(icons)) {
     app.component(key, value);

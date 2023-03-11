@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import MyFiles from "./pages/MyFiles.vue";
-import Navbar from "./components/Navbar.vue";
+import Navbar from "./components/Navbar.vue"
 </script>
 
 <template>
   <Navbar />
-  <MyFiles />
+  <router-view />
 </template>
 
 <style>

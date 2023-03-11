@@ -21,8 +21,14 @@ import IconTypePdf from "./IconTypePdf.vue";
 import IconTypeVideo from "./IconTypeVideo.vue";
 import IconTypeZip from "./IconTypeZip.vue";
 import IconUpload from "./IconUpload.vue";
+import IconClock from "@/components/icons/IconClock.vue"
+import IconHdd from "@/components/icons/IconHdd.vue"
+import IconStar from "@/components/icons/IconStar.vue"
 
 export default {
+  "icon-clock": IconClock,
+  "icon-hdd": IconHdd,
+  "icon-star": IconStar,
   "icon-check": IconCheck,
   "icon-arrow-down": IconArrowDown,
   "icon-arrow-up": IconArrowUp,
