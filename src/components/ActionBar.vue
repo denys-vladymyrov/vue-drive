@@ -33,6 +33,14 @@
       >
         <icon-trash/>
       </button>
+      <button
+          type="button"
+          class="rounded-button"
+          title="Add to starred"
+          @click="emit('starred')"
+      >
+        <icon-star/>
+      </button>
     </div>
   </div>
 </template>
@@ -49,7 +57,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['rename', 'remove', 'files-chosen', 'create-folder'])
+const emit = defineEmits(['rename', 'remove', 'files-chosen', 'create-folder', 'starred'])
 
 
 </script>

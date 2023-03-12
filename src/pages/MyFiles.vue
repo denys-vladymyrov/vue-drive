@@ -6,6 +6,7 @@
         @rename="modal.rename = true"
         @files-chosen="chosenFiles = $event"
         @create-folder="modal.newFolder = true"
+        @starred="addItemsToStarred"
     />
 
     <teleport to="#search-form">
@@ -64,8 +65,9 @@
 
 
 <script setup lang="ts">
-import {reactive, ref, watchEffect, provide, onMounted, computed, watch} from "vue"
+import { reactive, ref, watchEffect, provide, onMounted, computed, watch } from "vue"
 import { useRoute, useRouter } from "vue-router"
+import { addFileToStarred, addFoldersToStarred } from "@/api/starred"
 import filesApi from "../api/files"
 import foldersApi from "../api/folders"
 
@@ -79,6 +81,7 @@ import FolderNewForm from "@/components/files/FolderNewForm.vue"
 import DropZone from "@/components/uploader/file-chooser/DropZone.vue"
 import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
 
+
   // variables
 
   const files = ref([])
@@ -90,8 +93,6 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
     _order: "asc",
     q: ""
   })
-
-
 
   const selectedItems = ref([])
   const toast = reactive({
@@ -109,6 +110,8 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
 
   const renameFile = filesApi.update
   const renameFolder = foldersApi.update
+
+  const isFile = computed(() => selectedItems.value.length === 1 && (selectedItems.value[0] as any).mimeType)
 
   // methods
 
@@ -204,7 +207,6 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
   }
 
   const handleDoubleClickFolder = (folder: any) => {
-    //query.folderId = folder.id
     router.push({ name: 'folders', params: { folderId: folder.id } })
   }
 
@@ -219,7 +221,24 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
     router.push({ name: route.name!, query: newQuery })
   })
 
-  const isFile = computed(() => selectedItems.value.length === 1 && (selectedItems.value[0] as any).mimeType)
+  const addToStarred = (items: any) => {
+    items.forEach(async (item: any) => {
+      if (item.mimeType) {
+        addFileToStarred(item)
+      }
+      else {
+        addFoldersToStarred(item)
+      }
+    })
+  }
+
+  const addItemsToStarred = () => {
+    addToStarred(selectedItems.value)
+    selectedItems.value.splice(0)
+    toast.message = "Selected item(s) added to starred"
+  }
+
+
 
 </script>
 
