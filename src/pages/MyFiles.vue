@@ -8,9 +8,9 @@
         @create-folder="modal.newFolder = true"
     />
 
-<!--    <teleport to="#searchForm">-->
-<!--      <SearchForm v-model="query.q"/>-->
-<!--    </teleport>-->
+    <teleport to="#search-form">
+      <SearchForm v-model="query.q"/>
+    </teleport>
 
     <DropZone @files-dropped="chosenFiles = $event" :show-message="!files.length && !folders.length">
       <SectionHeader title="Folders" @sort-change="handleSortChange" v-if="folders.length" sort-toggler />
@@ -64,7 +64,8 @@
 
 
 <script setup lang="ts">
-import {reactive, ref, watchEffect, provide, onMounted, computed} from "vue"
+import {reactive, ref, watchEffect, provide, onMounted, computed, watch} from "vue"
+import { useRoute, useRouter } from "vue-router"
 import filesApi from "../api/files"
 import foldersApi from "../api/folders"
 
@@ -82,13 +83,15 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
 
   const files = ref([])
   const folders = ref([])
+  const folderId = ref(0)
 
   const query = reactive({
     _sort: "name",
     _order: "asc",
-    q: "",
-    folderId: 0
+    q: ""
   })
+
+
 
   const selectedItems = ref([])
   const toast = reactive({
@@ -100,6 +103,9 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
     newFolder: false
   })
   const chosenFiles = ref([])
+
+  const route = useRoute()
+  const router = useRouter()
 
   const renameFile = filesApi.update
   const renameFolder = foldersApi.update
@@ -118,12 +124,12 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
 
   provide('setSelectedItem', handleSelectChange)
 
-  const getPath = (query: any) => {
+  const getPath = (folderId: number) => {
     let folderPath = "folders"
     let filePath = "files"
 
-    if (query.folderId > 0) {
-      const basePath = `folders/${query.folderId}`
+    if (folderId > 0) {
+      const basePath = `folders/${folderId}`
       folderPath = `${basePath}/${folderPath}`
       filePath = `${basePath}/${filePath}`
     }
@@ -131,14 +137,13 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
     return { folderPath, filePath }
   }
 
-  const fetchFoldersAndFiles = async (query: any) => {
+  const fetchFoldersAndFiles = async (folderId: number, query: any) => {
     try {
-      const { folderPath, filePath } = getPath(query)
-      console.log("folderPath: " + folderPath)
-      console.log("filePath: " + filePath)
+      const { folderPath, filePath } = getPath(folderId)
+      const apiQuery = { ...query, folderId}
 
-      const { data: folders } = await foldersApi.index(query, folderPath)
-      const { data: files } = await filesApi.index(query, filePath)
+      const { data: folders } = await foldersApi.index(apiQuery, folderPath)
+      const { data: files } = await filesApi.index(apiQuery, filePath)
       return { folders, files }
     }
     catch (error) {
@@ -199,20 +204,19 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
   }
 
   const handleDoubleClickFolder = (folder: any) => {
-    query.folderId = folder.id
+    //query.folderId = folder.id
+    router.push({ name: 'folders', params: { folderId: folder.id } })
   }
 
   watchEffect(async () => {
-    const response = await fetchFoldersAndFiles(query)
+    folderId.value = +route.params.folderId || 0
+    const response = await fetchFoldersAndFiles(folderId.value, query)
     files.value = response?.files
     folders.value = response?.folders
-    history.pushState({}, "", `?${new URLSearchParams(query as any)}`)
   })
 
-  onMounted(() => {
-    window.onpopstate = () => {
-      Object.assign(query, Object.fromEntries(new URLSearchParams(window.location.search)))
-    }
+  watch(query, (newQuery) => {
+    router.push({ name: route.name!, query: newQuery })
   })
 
   const isFile = computed(() => selectedItems.value.length === 1 && (selectedItems.value[0] as any).mimeType)

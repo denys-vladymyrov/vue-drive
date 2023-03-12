@@ -9,6 +9,10 @@ const routes = [
       component: Drive,
       children: [
           {
+             path: "/",
+             redirect: { name: "my-files" }
+          },
+          {
               path: "my-files",
               component: MyFiles,
               name: "my-files"
@@ -21,7 +25,13 @@ const routes = [
           {
               path: "starred",
               component: Starred,
-              name: "starred"
+              name: "starred",
+              alias: "favorites"
+          },
+          {
+              path: "folders/:folderId",
+              name: "folders",
+              component: MyFiles
           }
       ]
 
