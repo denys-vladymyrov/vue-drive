@@ -10,7 +10,7 @@
       "id": 2,
       "name": "Docs",
       "folderId": 0,
-      "starred": true
+      "starred": false
     },
     {
       "id": 3,
@@ -42,7 +42,7 @@
       "mimeType": "image/png",
       "folderId": 3,
       "createdAt": 1635746159804,
-      "starred": true
+      "starred": false
     },
     {
       "id": 3,
