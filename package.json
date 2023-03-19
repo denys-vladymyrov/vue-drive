@@ -1,6 +1,6 @@
 {
-  "name": "vue-drive",
-  "version": "0.0.0",
+  "name": "@denys-vladymyrov/vue-drive",
+  "version": "0.0.1",
   "scripts": {
     "dev": "vite",
     "build": "run-p type-check build-only",
@@ -12,6 +12,10 @@
   },
   "publishConfig": {
     "registry": "https://npm.pkg.github.com/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/denys-vladymyrov/vue-drive.git"
   },
   "dependencies": {
     "-": "^0.0.1",
