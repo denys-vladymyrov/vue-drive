@@ -1,8 +1,9 @@
 const jsonServer = require("json-server");
+const auth = require("json-server-auth");
 const path = require("path");
 const cors = require("cors");
-var multer = require("multer");
-var storage = multer.diskStorage({
+let multer = require("multer");
+let storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, "./uploads"));
   },
@@ -12,12 +13,10 @@ var storage = multer.diskStorage({
   },
 });
 
-var upload = multer({
+let upload = multer({
   storage,
   fileFilter: validateFileType,
-  /*limits:{
-    fileSize: 1024 * 1024
-  }*/
+
 }).single("file");
 
 const server = jsonServer.create();
@@ -25,6 +24,7 @@ const router = jsonServer.router(path.join(__dirname, "db.json"));
 const middlewares = jsonServer.defaults();
 const port = 3030;
 
+server.db = router.db;
 server.options("*", cors());
 server.post("/files", upload, function (req, res, next) {
   const host = "http://localhost:" + port;
@@ -54,6 +54,8 @@ server.delete("/files/:id", (req, res, next) => {
   next();
 });
 
+server.use(cors());
+server.use(auth);
 server.use(middlewares);
 server.use(router);
 server.listen(port, () => {

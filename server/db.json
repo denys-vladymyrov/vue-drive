@@ -68,5 +68,17 @@
       "createdAt": 1635746199284,
       "starred": false
     }
+  ],
+  "users": [
+    {
+      "email": "jane@test.com",
+      "password": "$2a$10$FTHA12ATqEPqntbF3QCx2OPbMhQPD5W0ti23HMPJp0D1AKkM3fOHC",
+      "id": 1
+    },
+    {
+      "email": "link_amd@yahoo.com",
+      "password": "$2a$10$NE34Tm.boZZ4APdemFYy4eoFm55.kEjheFIFfW0pST3lRLEySeani",
+      "id": 2
+    }
   ]
 }
