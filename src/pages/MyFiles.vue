@@ -137,7 +137,7 @@ import UploaderPopup from "@/components/uploader/popup/UploaderPopup.vue"
       filePath = `${basePath}/${filePath}`
     }
 
-    return { folderPath, filePath }
+    return { folderPath: `660/${folderPath}`, filePath: `660/${filePath}` }
   }
 
   const fetchFoldersAndFiles = async (folderId: number, query: any) => {

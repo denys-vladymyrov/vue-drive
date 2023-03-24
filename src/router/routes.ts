@@ -3,6 +3,7 @@ import Recent from "@/pages/Recent.vue"
 import Starred from "@/pages/Starred.vue"
 import Drive from "@/pages/Drive.vue"
 import LoginForm from "@/pages/auth/LoginForm.vue"
+import RegisterForm from "@/pages/auth/RegisterForm.vue"
 
 const routes = [
   {
@@ -43,6 +44,11 @@ const routes = [
     path: "/login",
     name: "login",
     component: LoginForm
+  },
+  {
+    path: "/register",
+    name: "register",
+    component: RegisterForm
   }
 ]
 

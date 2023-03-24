@@ -1,3 +1,3 @@
 import httpCrud from "@/api/http-crud"
 
-export default httpCrud('folders')
+export default httpCrud('660/folders')
